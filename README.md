@@ -23,6 +23,10 @@ and some of the work I have done or doing.
     - <name>.md # Descriptions & git refs
 ```
 
+## Table of Contents
+
+- [AI Infrastructure and Compiler](./ai-compiler/README.md)
+
 ## Licensing
 
 - The standalone documents, including road maps,
