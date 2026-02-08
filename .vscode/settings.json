@@ -1,0 +1,20 @@
+{
+    "cSpell.words": [
+        "Autograd",
+        "CCCL",
+        "cuBLAS",
+        "CUDA",
+        "Eigen",
+        "hipify",
+        "Lakos",
+        "malloc",
+        "memcpy",
+        "MLIR",
+        "NCCL",
+        "ONNX",
+        "RAII",
+        "Reddy",
+        "Torczon",
+        "tuxfamily"
+    ]
+}
