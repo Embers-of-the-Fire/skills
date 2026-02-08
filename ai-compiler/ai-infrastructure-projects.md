@@ -1,602 +1,932 @@
-# AI Infrastructure Projects: Learning Toys & Portfolio Ideas
-
-This document contains projects organized by difficulty and purpose. **Learning toys** are smaller exercises to understand concepts. **Portfolio projects** are substantial enough to showcase on GitHub and discuss in interviews.
-
----
-
-## Part 1: Learning Toys (Quick Exercises)
-
-These are small, focused projects to understand specific concepts. Spend days to a week on each.
-
-### Category: CUDA Basics
-
-#### 1. Parallel Reduction Variants
-**Goal**: Understand warp-level programming and optimization
-- Implement sum reduction with different strategies:
-  - Naive global memory
-  - Shared memory with bank conflicts
-  - Shared memory without bank conflicts
-  - Warp shuffle intrinsics
-  - Cooperative groups
-- **Compare** performance at each level
-- **Skills**: CUDA memory hierarchy, profiling
-
-#### 2. Memory Coalescing Visualizer
-**Goal**: Understand memory access patterns
-- Write kernels with different access patterns (coalesced, strided, random)
-- Use Nsight Compute to measure memory throughput
-- Create a simple visualization/report of findings
-- **Skills**: Memory optimization, profiling tools
-
-#### 3. CUDA Stream Scheduler
-**Goal**: Understand asynchronous execution
-- Launch multiple kernels across different streams
-- Implement data dependencies between streams
-- Measure overlap between compute and memory transfers
-- **Skills**: Streams, events, pipelining
-
-### Category: C++ Templates & API Design
-
-#### 4. Mini-Tensor Library
-**Goal**: Template metaprogramming for compile-time optimization
-- Create a simple tensor class with compile-time dimension checking
-- Implement basic operations (add, multiply, transpose)
-- Use expression templates for lazy evaluation (like Eigen)
-- **Skills**: C++ templates, expression templates, API design
-
-#### 5. Python Binding Explorer
-**Goal**: Understand C++/Python interop
-- Write a simple C++ math library
-- Create bindings with:
-  - pybind11
-  - Python C API (manual)
-  - Cython
-- Compare performance and development experience
-- **Skills**: Language bindings, performance profiling
-
-#### 6. Plugin System
-**Goal**: Dynamic loading and API versioning
-- Create a simple plugin architecture for loading custom kernels
-- Implement version checking and backward compatibility
-- **Skills**: Shared libraries, API design, versioning
-
-### Category: Compiler Basics
-
-#### 7. Tiny Expression Compiler
-**Goal**: End-to-end compiler understanding
-- Write a compiler for simple math expressions (e.g., `x * 2 + y / 3`)
-- Stages: Lexer → Parser → AST → LLVM IR → JIT execution
-- Support variables and basic operations
-- **Skills**: Compiler pipeline, LLVM basics
-
-#### 8. LLVM Optimization Pass
-**Goal**: Understand LLVM pass infrastructure
-- Implement a simple optimization pass (e.g., strength reduction, constant folding)
-- Use LLVM's pass manager
-- Test on small programs
-- **Skills**: LLVM IR, optimization theory
-
-#### 9. MLIR Dialect Toy
-**Goal**: MLIR dialect creation
-- Follow the MLIR Toy tutorial completely
-- Create one additional operation (e.g., matrix transpose)
-- Implement its lowering through the pipeline
-- **Skills**: MLIR dialects, pattern rewriting
-
-### Category: ML Framework Internals
-
-#### 10. Minimal Autograd Engine
-**Goal**: Understand automatic differentiation
-- Implement basic tensor with autograd (like micrograd)
-- Support operations: add, mul, matmul, relu
-- Compute gradients via backpropagation
-- **Skills**: Autograd concepts, computational graphs
-
-#### 11. PyTorch Custom Operator
-**Goal**: Extend PyTorch with custom ops
-- Implement a simple custom operation (e.g., fused LayerNorm)
-- Write both CPU and CUDA kernels
-- Register with PyTorch dispatcher
-- Write Python tests with torch.autograd.gradcheck
-- **Skills**: PyTorch internals, operator registration
-
-#### 12. Kernel Fusion Study
-**Goal**: Understand when/why to fuse operators
-- Implement separate kernels: `x = relu(matmul(A, B) + bias)`
-- Implement fused version in single kernel
-- Measure memory bandwidth savings
-- **Skills**: Kernel fusion, performance analysis
-
-### Category: GPU Compiler
-
-#### 13. Triton Kernel Portfolio
-**Goal**: Learn Triton programming model
-- Reimplement 5 common operations in Triton:
-  - GEMM (matrix multiply)
-  - Softmax
-  - LayerNorm
-  - Flash Attention
-  - Fused GELU
-- Compare against PyTorch built-ins
-- **Skills**: Triton language, block-level programming
-
-#### 14. PTX Inspector
-**Goal**: Understand GPU assembly
-- Write simple CUDA kernels
-- Examine generated PTX and SASS
-- Identify optimization opportunities (register usage, instruction mix)
-- **Skills**: PTX, low-level GPU programming
+# AI Infrastructure Projects: Learning & Portfolio (v2)
+**Focus**: C++ APIs, Compilers, GPU Systems (No Python Bindings)
 
 ---
 
-## Part 2: Portfolio Projects (Substantial Work)
+## Part 1: API Learning Projects (1-2 weeks each)
 
-These are more involved projects that demonstrate real expertise. Each should take 2-6 weeks.
+These teach you practical C++ API usage and design patterns.
 
-### Tier 1: Foundation Projects (Good First Portfolio Pieces)
+### AL1: CUDA API Explorer
 
-#### P1. High-Performance GEMM Library
-**Goal**: Demonstrate GPU optimization mastery
+**Goal**: Master CUDA runtime APIs through practical use
 
-**Description**:
-- Implement matrix multiplication with progressive optimizations
-- Multiple versions: naive → tiled → shared memory → register blocking → tensor cores
-- Support multiple data types (FP32, FP16, INT8)
-- Performance comparison against cuBLAS
-- Detailed README explaining each optimization
+**Tasks**:
+1. Implement programs using every major CUDA API category:
+   - Memory: malloc/free, memcpy (sync/async), managed, pitched
+   - Streams: creation, priority, callbacks, synchronization
+   - Events: recording, timing, inter-stream dependencies
+   - Graphs: capture, instantiate, launch
+   
+2. Create a C++ wrapper library:
+   - RAII wrappers for handles
+   - Type-safe memory operations
+   - Error handling utilities
+   
+3. **Deliverable**: Header-only CUDA utilities library
 
-**Technical Details**:
-- Use CUTLASS as reference (but implement yourself)
-- Create Python bindings
-- Benchmark suite with different matrix sizes
-- Visualizations of performance vs cuBLAS
-
-**Skills Demonstrated**: CUDA optimization, memory hierarchy, benchmarking, API design
-
-**Bonus**: Implement in both CUDA and Triton, compare productivity vs performance
+**Skills**: CUDA APIs, C++ RAII, error handling, modern C++ design
 
 ---
 
-#### P2. PyTorch Operator Extension Pack
-**Goal**: Show framework integration skills
+### AL2: cuBLAS Deep Dive
 
-**Description**:
-- Collection of 5-10 custom PyTorch operators
-- Each with CPU, CUDA, and optionally Triton implementations
-- Full autograd support with gradient tests
-- Python package with pip install
+**Goal**: Understand high-performance library API design
 
-**Example Operators**:
-- Fused Adam optimizer step
-- Fused cross-entropy + softmax
-- Flash Attention variant
-- Fused dropout + residual connection
-- Custom activation functions
+**Tasks**:
+1. Write programs calling 20+ cuBLAS functions
+   - Different precisions (SGEMM, DGEMM, HGEMM)
+   - Batched operations
+   - Strided batched operations
+   
+2. Implement simple matrix ops using cuBLAS
+   - Study handle management patterns
+   - Understand workspace allocation
+   
+3. Benchmark and profile
+   - Compare different algorithm choices
+   - Measure API overhead
 
-**Technical Details**:
-- Proper PyTorch dispatcher registration
-- Comprehensive unit tests
-- Benchmark comparisons vs native PyTorch
-- CI/CD with GitHub Actions
+**Deliverable**: Benchmark suite + API pattern documentation
 
-**Skills Demonstrated**: PyTorch internals, operator fusion, production packaging
+**Skills**: Library API design, BLAS, performance analysis
 
 ---
 
-#### P3. TVM Custom Backend
-**Goal**: Demonstrate compiler knowledge
+### AL3: CUTLASS Configuration Explorer
 
-**Description**:
-- Implement a custom backend for TVM targeting specific hardware or simulation
-- Alternative: Contribute scheduling templates for new operators
-- Document the process thoroughly
+**Goal**: Navigate complex template-based APIs
 
-**Options**:
-- Custom CPU backend with specific intrinsics (AVX-512, etc.)
-- WebGPU backend
-- Custom accelerator simulation
-- New operator schedules (Conv2D variants, Attention)
+**Tasks**:
+1. Instantiate CUTLASS GEMM with 10+ different configurations:
+   - Different tile sizes
+   - Different thread block shapes
+   - Different epilogue operations
+   
+2. Measure performance impact of each configuration
+3. Understand template parameter meanings
+4. Trace through template instantiation
 
-**Technical Details**:
-- Integration with TVM's code generation
-- AutoTVM/MetaSchedule support
-- Benchmark improvements
-- Contribution path to TVM (open PR)
+**Deliverable**: Performance study with graphs
 
-**Skills Demonstrated**: Compiler backends, code generation, TVM architecture
+**Skills**: C++ templates, GPU optimization, CUTLASS APIs
 
 ---
 
-### Tier 2: Advanced Projects (Strong Portfolio Pieces)
+### AL4: Thrust Algorithm Implementation
 
-#### P4. Mini Deep Learning Compiler
-**Goal**: End-to-end compiler implementation
+**Goal**: Design STL-like parallel APIs
 
-**Description**:
-- Build a compiler that takes a neural network and generates optimized code
-- Focus on specific domain (e.g., transformers, CNNs)
-- Multiple optimization passes
+**Tasks**:
+1. Implement parallel algorithms using Thrust:
+   - Transform, reduce, scan, sort
+   - Custom functors and iterators
+   
+2. Study Thrust source code:
+   - How backends are selected
+   - Policy-based design patterns
+   
+3. Write custom iterator type
+
+**Deliverable**: Parallel algorithms library with custom iterators
+
+**Skills**: Generic programming, parallel algorithms, API design
+
+---
+
+### AL5: MLIR API Basics
+
+**Goal**: Learn to construct IR programmatically
+
+**Tasks**:
+1. Use MLIR C++ APIs to build IR:
+   - Create module, functions, basic blocks
+   - Build operations programmatically
+   - Set attributes and types
+   
+2. Implement simple programs in multiple dialects:
+   - Arith dialect
+   - SCF dialect
+   - Func dialect
+   
+3. Print and verify IR
+
+**Deliverable**: MLIR IR generator for simple programs
+
+**Skills**: MLIR APIs, IR construction, dialect usage
+
+---
+
+## Part 2: Compiler Learning Projects (2-4 weeks each)
+
+### CL1: Expression Compiler (LLVM)
+
+**Goal**: End-to-end compiler with LLVM
 
 **Components**:
-- **Frontend**: Import from PyTorch/ONNX
-- **IR**: Define your own or use MLIR
-- **Optimization**: Operator fusion, constant folding, layout optimization
-- **Backend**: Generate CUDA or Triton code
-- **Runtime**: Minimal runtime for execution
+- Lexer & Parser (hand-written or ANTLR)
+- AST construction
+- LLVM IR generation via IRBuilder
+- JIT execution
 
-**Technical Details**:
-- Use MLIR for IR (recommended) or design custom IR
-- At least 3-4 optimization passes
-- Support 10-15 operators
-- End-to-end inference on a real model (ResNet, BERT)
+**Language Features**:
+- Variables (int, float)
+- Arithmetic operations
+- Functions
+- Control flow (if, while)
 
-**Skills Demonstrated**: Compiler architecture, graph optimization, code generation
+**Deliverable**: Working compiler + documentation
 
-**Examples to Study**: TVM, IREE, XLA
+**Skills**: Compiler pipeline, LLVM IR, IR Builder API
 
 ---
 
-#### P5. Kernel Auto-Tuner Framework
-**Goal**: Demonstrate autotuning and metaprogramming
+### CL2: LLVM Optimization Pass Collection
+
+**Goal**: Master LLVM pass API
+
+**Implement 5+ passes**:
+1. Dead code elimination
+2. Constant propagation
+3. Strength reduction
+4. Loop invariant code motion
+5. Simple inlining
+
+**Deliverable**: LLVM pass library with tests
+
+**Skills**: LLVM Pass API, SSA form, optimization theory
+
+---
+
+### CL3: MLIR Toy Tutorial Extended
+
+**Goal**: Deep MLIR understanding
+
+**Tasks**:
+1. Complete all 7 Toy tutorial chapters
+2. Add 5 new operations:
+   - Matrix transpose
+   - Element-wise operations
+   - Reduction operations
+   
+3. Implement optimizations:
+   - Constant folding
+   - Operation fusion patterns
+   
+4. Add new lowering: Toy → Linalg
+
+**Deliverable**: Extended Toy language with documentation
+
+**Skills**: MLIR dialects, pattern rewriting, lowering
+
+---
+
+### CL4: Mini Tensor Compiler (MLIR)
+
+**Goal**: Build domain-specific compiler
 
 **Description**:
-- Framework for automatically tuning CUDA kernels
-- Search over different tiling, threading, and memory strategies
-- Machine learning-based search (optional)
+- Compile tensor operations to optimized code
+- Use existing MLIR dialects
+
+**Pipeline**:
+1. Parse tensor expressions
+2. Generate MLIR (tensor/linalg dialect)
+3. Apply transformations (tiling, vectorization)
+4. Lower: Linalg → SCF → LLVM
+5. Execute via JIT
+
+**Deliverable**: Tensor DSL compiler
+
+**Skills**: MLIR pipeline, Linalg dialect, transformations
+
+---
+
+### CL5: Triton Kernel Study
+
+**Goal**: Understand modern GPU compiler
+
+**Tasks**:
+1. Implement 10+ kernels in Triton
+2. Study generated MLIR (enable dumps)
+3. Trace compilation: Triton IR → Triton-GPU → LLVM → PTX
+4. Read Triton source code:
+   - Frontend (AST → IR)
+   - Transformations
+   - Lowering passes
+
+**Deliverable**: Kernel library + compiler analysis doc
+
+**Skills**: Triton, MLIR-based compilation, GPU codegen
+
+---
+
+## Part 3: Portfolio Projects (4-8 weeks each)
+
+These are substantial, interview-worthy projects.
+
+### Portfolio Tier 1 (Foundational)
+
+#### P1: Optimized GEMM Kernel Series
+
+**Goal**: Demonstrate GPU optimization expertise
+
+**Implementation Stages**:
+1. Naive global memory (baseline)
+2. Shared memory tiling
+3. Register blocking
+4. Vectorized memory access
+5. Warp-level GEMM (WMMA)
+6. Tensor Core version (MMA)
+7. Async copy (Hopper if available)
+
+**Additional**:
+- Multiple data types (FP32, FP16, INT8, BF16)
+- C++ template-based API for configuration
+- Comprehensive benchmarks vs cuBLAS
+- Roofline analysis
+
+**Deliverable**:
+- Clean, well-documented code
+- Performance graphs
+- Technical writeup explaining each optimization
+- CMake build system
+
+**Skills**: CUDA optimization, memory hierarchy, C++ templates, benchmarking
+
+**Target Companies**: NVIDIA, AMD, any GPU-focused role
+
+---
+
+#### P2: CUTLASS-Inspired Template Library
+
+**Goal**: Modern C++ template programming for GPUs
+
+**Description**:
+- Build a smaller, educational version of CUTLASS
+- Focus on clarity over ultimate performance
+- Heavy use of C++17/20 features
 
 **Features**:
-- Template-based kernel generator
-- Search space definition DSL
-- Performance model (optional: learned or analytical)
-- Auto-scheduler
-- Caching of tuned kernels
+- Template-based tile operations
+- Configurable thread block structure
+- Compile-time optimizations
+- Multiple backends (CPU for testing, CUDA)
 
-**Technical Details**:
-- Focus on one kernel class (GEMM, Conv, Attention)
-- Generate 1000s of variants programmatically
-- Profile and select best configurations
-- Compare against AutoTVM approach
+**Structure**:
+```
+include/
+  gemm/
+    device/     # Device-level API
+    kernel/     # Kernel templates
+    thread/     # Thread-level tiles
+  arch/         # Architecture-specific
+  epilogue/     # Post-processing
+```
 
-**Skills Demonstrated**: Meta-programming, performance modeling, automation
+**Deliverable**: Template library with examples and docs
+
+**Skills**: C++ templates, metaprogramming, API design
 
 ---
 
-#### P6. MLIR Dialect for Domain-Specific Operations
-**Goal**: Advanced MLIR expertise
+#### P3: CUDA Library with Clean C++ API
+
+**Goal**: Design production-quality GPU library API
+
+**Domain**: Choose one:
+- Image processing primitives
+- Signal processing (FFT-based operations)
+- Sparse matrix operations
+- Graph algorithms
+
+**API Requirements**:
+- Handle-based resource management
+- Clear error handling
+- Workspace management pattern
+- Algorithm selection APIs
+- Batched operations support
+
+**Implementation**:
+- Multiple kernel implementations per operation
+- Auto-tuning based on problem size
+- Comprehensive unit tests (GoogleTest)
+- Benchmarks (Google Benchmark)
+- Doxygen documentation
+
+**Deliverable**: Production-quality library
+
+**Skills**: API design, CUDA, testing, documentation
+
+**Target Companies**: NVIDIA (libraries team), AMD
+
+---
+
+### Portfolio Tier 2 (Advanced Compiler)
+
+#### P4: ML Operator Compiler (MLIR-based)
+
+**Goal**: Build end-to-end ML compiler
 
 **Description**:
-- Design and implement a complete MLIR dialect
-- Full lowering pipeline to GPU or CPU
-- Demonstrate on real use case
+- Compile subset of neural network ops to GPU
+- Focus on transformers or CNNs
 
-**Example Domains**:
-- Graph neural networks (GNN operations)
+**Architecture**:
+
+1. **Frontend**:
+   - Import from ONNX
+   - Generate tensor/linalg dialect
+   
+2. **Optimization Pipeline**:
+   - Operator fusion passes (5+)
+   - Tiling transformations
+   - Layout optimizations
+   - Constant folding
+   
+3. **Backend**:
+   - Lower to GPU dialect
+   - Generate efficient kernels
+   - JIT execution
+   
+4. **Runtime**:
+   - Simple runtime for kernel launch
+   - Workspace management
+
+**Supported Ops** (minimum):
+- MatMul, Conv2D
+- Activations (ReLU, GELU)
+- LayerNorm, Softmax
+- Attention (bonus)
+
+**Deliverable**:
+- Working compiler
+- Run inference on real model (ResNet/BERT)
+- Performance comparison vs PyTorch
+- Architecture documentation
+
+**Skills**: MLIR, compiler design, optimization, GPU codegen
+
+**Target Companies**: All (Google, Meta, NVIDIA, Modular)
+
+---
+
+#### P5: Custom MLIR Dialect + Full Lowering
+
+**Goal**: Demonstrate MLIR mastery
+
+**Choose Domain**:
 - Sparse tensor operations
+- Graph neural network ops
 - Quantized operations
-- Attention variants
+- Custom attention variants
+
+**Requirements**:
+
+1. **Dialect Definition**:
+   - 15+ custom operations
+   - Custom types
+   - Traits and interfaces
+   - TableGen definitions
+   
+2. **Optimizations**:
+   - 10+ pattern rewrites
+   - Dialect-specific transformations
+   - Cost models for decisions
+   
+3. **Lowering Pipeline**:
+   - High-level dialect → Linalg
+   - Linalg → SCF + GPU
+   - GPU → NVVM → PTX
+   
+4. **Integration**:
+   - Usable from C++ API
+   - Bonus: PyTorch integration via torch-mlir
+
+**Deliverable**:
+- Complete dialect implementation
+- End-to-end examples
+- Performance evaluation
+- Contribution path (even if not accepted)
+
+**Skills**: MLIR expertise, dialect design, optimization
+
+**Target Companies**: Google, Modular, Meta, compiler-focused roles
+
+---
+
+#### P6: Triton-Like Compiler (Simplified)
+
+**Goal**: Build block-level GPU language compiler
+
+**Description**:
+- Simpler than Triton but same concepts
+- Educational focus
 
 **Components**:
-- Custom operations and types
-- Dialect interfaces and traits
-- Pattern rewriting for optimization
-- Lowering to Linalg/GPU/LLVM dialects
-- Integration with PyTorch via torch-mlir
 
-**Technical Details**:
-- At least 10 custom ops
-- 5+ optimization patterns
-- End-to-end example notebook
-- Documentation and tests
+1. **Frontend DSL**:
+   - C++-embedded DSL or simple language
+   - Block-level programming model
+   
+2. **IR Design**:
+   - MLIR-based
+   - Custom dialect for block operations
+   - Memory layout annotations
+   
+3. **Transformations**:
+   - Automatic parallelization
+   - Memory coalescing
+   - Shared memory optimization
+   
+4. **Backend**:
+   - Lower to GPU dialect
+   - Generate PTX via LLVM
 
-**Skills Demonstrated**: MLIR mastery, dialect design, compiler infrastructure
+**Example Programs**:
+- GEMM
+- Softmax
+- LayerNorm
+- Flash Attention (simplified)
 
----
+**Deliverable**: Working compiler with examples
 
-#### P7. Distributed Training Micro-Framework
-**Goal**: Show systems + libraries expertise
-
-**Description**:
-- Lightweight framework for distributed training
-- Focus on clear API design and efficiency
-- Support multiple parallelism strategies
-
-**Features**:
-- Data parallel with gradient synchronization (NCCL)
-- Simple model parallel
-- Pipeline parallel (optional)
-- Python API wrapping C++ core
-- Integration with PyTorch models
-
-**Technical Details**:
-- Use NCCL for communication
-- Custom CUDA kernels for gradient operations
-- Handle fault tolerance (checkpointing)
-- Benchmarks vs PyTorch DDP
-
-**Skills Demonstrated**: Distributed systems, NCCL, API design, PyTorch integration
+**Skills**: Language design, MLIR, GPU codegen
 
 ---
 
-### Tier 3: Research-Level Projects (Publication-Worthy)
+#### P7: Auto-Tuning Framework
 
-#### P8. Novel Kernel Fusion Framework
-**Goal**: Publishable contribution
+**Goal**: Automatic performance optimization
 
 **Description**:
-- Automatic kernel fusion based on novel heuristics or learned models
-- Apply to transformer or diffusion models
-- Demonstrate speedups
+- Meta-programming system for kernel generation
+- Search for optimal configurations
+
+**Components**:
+
+1. **Kernel Generator**:
+   - Template-based or code generation
+   - Generate 1000s of variants
+   - Parameters: tile size, thread count, etc.
+   
+2. **Search Strategy**:
+   - Random search (baseline)
+   - Genetic algorithm
+   - ML-guided (optional)
+   
+3. **Cost Model**:
+   - Analytical model (roofline)
+   - Or learned from profiling data
+   
+4. **Caching**:
+   - Store tuned configs
+   - Database of optimal parameters
+
+**Focus on**: One kernel type (GEMM, Conv, Attention)
+
+**Deliverable**:
+- Auto-tuning framework
+- Comparison vs hand-tuned and AutoTVM
+- Documentation
+
+**Skills**: Meta-programming, performance modeling, search algorithms
+
+---
+
+### Portfolio Tier 3 (Research-Level)
+
+#### P8: Advanced Kernel Fusion System
+
+**Goal**: Automatic fusion with novel techniques
 
 **Approach**:
-- Graph analysis to find fusion opportunities
-- Cost model for fusion decisions (analytical or learned)
-- Code generation for fused kernels
-- Integration with PyTorch or JAX
+- Graph analysis for fusion opportunities
+- Cost model for fusion decisions
+- Support for multi-kernel fusion
 
-**Validation**:
-- Test on LLaMA, BERT, Stable Diffusion
-- Measure end-to-end speedup and memory reduction
-- Compare against eager execution and XLA/TorchScript
+**Novel Aspects** (choose 1-2):
+- ML-based fusion decisions
+- Polyhedral-based fusion
+- Profile-guided fusion
+- Memory-aware fusion
 
-**Skills Demonstrated**: Research ability, compiler optimization, ML systems
+**Evaluation**:
+- Test on large models (LLaMA, BERT, Stable Diffusion)
+- Measure: Speedup, memory usage, compilation time
+- Compare vs: Eager, XLA, TorchScript
 
-**Publication Target**: MLSys, ASPLOS, CGO
+**Deliverable**:
+- Fusion framework
+- Extensive evaluation
+- Technical paper (MLSys format)
+
+**Skills**: Research, advanced optimization, ML systems
 
 ---
 
-#### P9. Attention Mechanism Compiler
+#### P9: Domain-Specific Compiler for Attention
+
 **Goal**: Specialize in critical ML primitive
 
-**Description**:
-- Compiler specifically for attention variants
-- Support Flash Attention, Multi-Query, Grouped-Query, etc.
-- Automatic optimization based on hardware
+**Support**:
+- Multi-head attention
+- Flash Attention variants
+- Multi-query attention
+- Sparse attention patterns
 
 **Features**:
-- High-level DSL for attention patterns
-- Automatic tiling and memory optimization
-- Support for sparse attention
-- Multi-GPU optimization
+- High-level specification
+- Automatic optimization (tiling, fusion)
+- Multi-GPU support
+- Memory-efficient implementations
 
-**Technical Details**:
-- Use MLIR or custom IR
-- Generate Triton or CUDA code
-- Extensive benchmarks on A100/H100
-- Integration with HuggingFace transformers
+**Technical Depth**:
+- IO analysis (like Flash Attention paper)
+- Optimal tiling strategies
+- Kernel fusion
+- Quantization support
 
-**Skills Demonstrated**: Domain expertise, advanced optimization, production quality
+**Evaluation**:
+- Compare vs PyTorch native
+- Compare vs Flash Attention
+- Show memory/speed tradeoffs
+
+**Deliverable**:
+- Attention compiler
+- Integration with transformers library
+- Technical writeup
 
 ---
 
-#### P10. Quantization-Aware Compiler
-**Goal**: Address critical production need
+#### P10: Multi-Backend Execution Framework
+
+**Goal**: Portable high-performance execution
 
 **Description**:
-- Compiler for mixed-precision and quantized models
-- Automatic precision selection
-- Custom kernels for quantized operations
+- Single IR, multiple backends
+- Inspired by ONNX Runtime
 
-**Features**:
-- INT8, FP16, BF16, FP8 support
-- Automatic mixed precision
-- Calibration for quantization
-- Quantized GEMM and convolution kernels
-- Model accuracy vs performance tradeoff analysis
+**Backends**:
+- CUDA
+- ROCm (via HIP)
+- CPU (via LLVM)
+- Vulkan (bonus)
 
-**Technical Details**:
-- Integration with PyTorch/ONNX
-- Custom CUDA kernels or CUTLASS-based
-- Profile on real models (BERT, ResNet, etc.)
-- Achieve <1% accuracy loss with 2-3x speedup
+**Architecture**:
+1. Graph IR (use ONNX or custom)
+2. Backend abstraction layer
+3. Per-backend optimizations
+4. Runtime dispatcher
 
-**Skills Demonstrated**: Quantization expertise, kernel optimization, production ML
+**Advanced Features**:
+- Heterogeneous execution (multi-device)
+- Dynamic shapes
+- Operator partial execution
+
+**Deliverable**:
+- Multi-backend framework
+- Performance portability study
+
+**Skills**: Systems design, multi-backend, abstraction
 
 ---
 
-## Part 3: Open Source Contribution Ideas
+## Part 4: Rust-Based Projects
 
-Contributing to major projects is highly valuable. Here are strategic areas:
+Since you have Rust background:
 
-### PyTorch
+### R1: CUDA Kernel Launcher (Rust)
+
+**Goal**: Safe Rust API for CUDA
+
+**Features**:
+- Type-safe kernel launches
+- Memory management with Rust ownership
+- Stream/event abstractions
+- Error handling with Result types
+
+**Study**: [cudarc](https://github.com/coreylowman/cudarc)
+
+**Deliverable**: Rust CUDA library
+
+---
+
+### R2: LLVM Bindings Project (Rust)
+
+**Goal**: LLVM-based compiler in Rust
+
+**Use**: [inkwell](https://github.com/TheDan64/inkwell)
+
+**Project**: Build a simple language compiler in Rust
+
+**Benefits**: Rust safety + LLVM power
+
+---
+
+### R3: Cranelift Backend
+
+**Goal**: Learn code generation in Rust
+
+**Study**: [Cranelift](https://github.com/bytecodealliance/wasmtime/tree/main/cranelift)
+
+**Project**: Add optimizations or study existing backend
+
+**Skills**: Code generation, Rust, compiler backend
+
+---
+
+## Part 5: Open Source Contribution Strategy
+
+Contributing to major projects is highly valuable.
+
+### Strategy 1: Documentation First
+
+1. Read code deeply
+2. Improve documentation
+3. Add examples
+4. Write tutorials
+
+**Why**: Learn codebase, visible contributions, appreciated
+
+### Strategy 2: Fix Beginner Issues
+
+Search for labels:
+- `good first issue`
+- `documentation`
+- `help wanted`
+
+**Projects**:
+- PyTorch
+- TVM
+- Triton
+- ONNX Runtime
+
+### Strategy 3: Implement Missing Features
+
+1. Study roadmap/issues
+2. Find unimplemented operators
+3. Propose implementation
+4. Submit PR
+
+**Examples**:
+- Missing CUDA kernels in PyTorch
+- New operator schedules in TVM
+- Dialect ops in MLIR
+
+### Strategy 4: Performance Improvements
+
+1. Profile existing code
+2. Identify bottlenecks
+3. Propose optimizations
+4. Benchmark improvements
+
+**Target**: CUTLASS, PyTorch ops, TVM schedules
+
+### High-Value Targets:
+
+#### PyTorch
 - **Repo**: [pytorch/pytorch](https://github.com/pytorch/pytorch)
-- **Ideas**:
-  - Implement missing CUDA kernels in `aten/src/ATen/native/cuda/`
-  - Add CPU optimizations with AVX-512
-  - Improve torch.compile coverage
-  - Add custom ops to core library
-- **Labels**: `module: cpu`, `module: cuda`, `good first issue`
+- **Focus**: `aten/src/ATen/native/cuda/` - CUDA kernels
+- **Impact**: Used by millions
 
-### NVIDIA CUTLASS
-- **Repo**: [NVIDIA/cutlass](https://github.com/NVIDIA/cutlass)
-- **Ideas**:
-  - New GEMM epilogue patterns
-  - Support for new GPU architectures
-  - Additional tensor operations
-  - Documentation improvements
-
-### Apache TVM
+#### Apache TVM
 - **Repo**: [apache/tvm](https://github.com/apache/tvm)
-- **Ideas**:
-  - New operator schedules
-  - Frontend improvements (PyTorch, ONNX)
-  - AutoScheduler enhancements
-  - Backend optimizations
-- **Labels**: `good first issue`, `operator`
+- **Focus**: Operator schedules, new hardware backends
+- **Community**: Very welcoming
 
-### OpenAI Triton
+#### OpenAI Triton
 - **Repo**: [openai/triton](https://github.com/openai/triton)
-- **Ideas**:
-  - New tutorial implementations
-  - Compiler optimization passes
-  - Backend improvements
-  - Documentation
-- **Very active community, responsive maintainers**
+- **Focus**: Compiler passes, tutorials, examples
+- **Impact**: Growing rapidly
 
-### MLIR
+#### MLIR
 - **Repo**: [llvm/llvm-project/mlir](https://github.com/llvm/llvm-project/tree/main/mlir)
-- **Ideas**:
-  - New dialect operations
-  - Conversion patterns
-  - Documentation
-  - Examples
-- **Join**: [LLVM Discourse MLIR category](https://discourse.llvm.org/c/mlir/)
+- **Focus**: Dialect operations, conversions, documentation
+- **Prestige**: Very high
 
-### Microsoft ONNX Runtime
-- **Repo**: [microsoft/onnxruntime](https://github.com/microsoft/onnxruntime)
-- **Ideas**:
-  - Execution provider improvements
-  - Quantization enhancements
-  - Graph optimizations
-  - New operator support
-
-### torch-mlir
+#### torch-mlir
 - **Repo**: [llvm/torch-mlir](https://github.com/llvm/torch-mlir)
-- **Ideas**:
-  - Op coverage expansion
-  - Optimization passes
-  - Backend support
-  - Testing infrastructure
+- **Focus**: Op coverage, optimization passes
+- **Growing**: Active development
 
 ---
 
-## Part 4: Project Selection Strategy
+## Part 6: Project Selection Guide
 
-### For Maximum Learning
-1. Start with **Learning Toys** in each category
-2. Build **P1 (GEMM)** or **P2 (PyTorch Extensions)** first
-3. Deep dive into either **compiler** (P4, P6) or **libraries** (P7) based on interest
-4. Contribute to open source alongside personal projects
+### For Learning (First 3-6 months):
+1. Do ALL API Learning projects (AL1-AL5)
+2. Do ALL Compiler Learning projects (CL1-CL5)
+3. Pick ONE Tier 1 portfolio project
 
-### For Job Applications
+### For Job Hunting (6-12 months):
 
 #### Target: NVIDIA
-**Priority**: P1 (GEMM) → P2 (PyTorch Ops) → CUTLASS contributions
-**Skills**: CUDA, CUTLASS, performance optimization
+- **Must**: P1 (GEMM), P2 (Templates)
+- **Plus**: CUTLASS contributions
+- **Bonus**: P3 (CUDA Library)
 
 #### Target: Microsoft
-**Priority**: P2 (PyTorch Ops) → P7 (Distributed) → ONNX Runtime contributions
-**Skills**: API design, PyTorch, ONNX, cross-platform
+- **Must**: P3 (Library API), P5 (MLIR Dialect)
+- **Plus**: ONNX Runtime contributions
+- **Bonus**: P10 (Multi-backend)
 
-#### Target: Google/DeepMind
-**Priority**: P4 (Compiler) → P6 (MLIR) → JAX/XLA contributions
-**Skills**: Compilers, MLIR, functional programming
+#### Target: Google
+- **Must**: P4 (ML Compiler), P5 (MLIR Dialect)
+- **Plus**: MLIR contributions
+- **Bonus**: P9 (Attention)
 
 #### Target: Meta
-**Priority**: P2 (PyTorch Ops) → P4 (Compiler) → PyTorch contributions
-**Skills**: PyTorch internals, compilers, distributed training
+- **Must**: P4 (ML Compiler), PyTorch contributions
+- **Plus**: torch-mlir work
+- **Bonus**: P8 (Fusion)
 
-#### Target: Startups (Modular, Together AI, etc.)
-**Priority**: P4 (Compiler) → P6 (MLIR) → P8/P9 (Research)
-**Skills**: End-to-end, research implementation, speed
+#### Target: Modular, Startups
+- **Must**: P4 (ML Compiler), P5 (MLIR Dialect)
+- **Plus**: P8/P9 (Research)
+- **Bonus**: Novel ideas, speed of implementation
+
+### For Research/PhD:
+- P8, P9, or P10
+- Focus on novel contributions
+- Write paper (MLSys, ASPLOS, CGO)
 
 ---
 
-## Part 5: Project Best Practices
+## Part 7: Implementation Best Practices
 
-### Code Quality
-- **Style**: Follow Google C++ Style Guide
-- **Documentation**: Doxygen for C++, docstrings for Python
-- **Tests**: GoogleTest (C++), pytest (Python)
-- **CI/CD**: GitHub Actions with CUDA support
+### Code Quality Standards
+
+**C++ Style**:
+- Follow [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html)
+- Use clang-format (config from LLVM/PyTorch)
+- Modern C++17/20 features
+
+**Build System**:
+- Modern CMake (3.18+)
+- Proper target exports
+- Find modules for dependencies
+
+**Testing**:
+- GoogleTest for C++
+- Minimum 80% coverage
+- Unit tests + integration tests
+
+**Documentation**:
+- Doxygen for APIs
+- Markdown for architecture
+- Examples/ directory
+
+**CI/CD**:
+- GitHub Actions
+- Build + test on commit
+- Run on CPU (always) + GPU (if possible)
 
 ### Repository Structure
+
 ```
 project-name/
-├── README.md              # Detailed, with examples
-├── CMakeLists.txt         # Modern CMake
-├── include/               # Public headers
+├── CMakeLists.txt
+├── README.md
+├── LICENSE
+├── docs/
+│   ├── architecture.md
+│   ├── api_reference.md
+│   └── tutorials/
+├── include/
 │   └── project/
-├── src/                   # Implementation
-│   ├── cpu/              # CPU kernels
-│   └── cuda/             # CUDA kernels
-├── python/                # Python bindings
-│   └── setup.py
-├── tests/                 # Unit tests
-├── benchmarks/            # Performance tests
-├── examples/              # Usage examples
-└── docs/                  # Documentation
+│       ├── core/
+│       ├── cuda/
+│       └── utils/
+├── src/
+│   ├── core/
+│   ├── cuda/
+│   └── CMakeLists.txt
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   └── CMakeLists.txt
+├── benchmarks/
+│   └── gemm_bench.cpp
+├── examples/
+│   ├── basic/
+│   └── advanced/
+└── third_party/
 ```
 
-### README Must-Haves
-1. Clear project description
-2. Installation instructions
-3. Quick start example
-4. Architecture overview
+### Performance Benchmarking
+
+**Tools**:
+- Google Benchmark (C++)
+- Custom CUDA timing (events)
+- Nsight Compute for profiling
+
+**Metrics**:
+- GFLOPS / TFLOPS
+- Memory bandwidth utilization
+- Occupancy
+- Wall-clock time
+
+**Visualization**:
+- matplotlib / seaborn (Python)
+- Generate graphs in README
+- Compare vs baselines
+
+### Documentation Requirements
+
+**README Must Have**:
+1. Project description (2-3 paragraphs)
+2. Key features (bullet points)
+3. Quick start (5-minute example)
+4. Building from source
 5. Performance benchmarks (with graphs!)
-6. Comparison with alternatives
-7. Future work / limitations
+6. Architecture overview (diagram)
+7. API examples
+8. Comparison with alternatives
+9. Future work
+10. License
 
-### Performance Benchmarks
-- Use Google Benchmark (C++) or pytest-benchmark (Python)
-- Test multiple problem sizes
-- Compare against baselines (PyTorch, cuBLAS, etc.)
-- Include graphs (matplotlib, seaborn)
-- Report hardware used
+**API Documentation**:
+- Doxygen comments on all public APIs
+- Usage examples in comments
+- Parameter descriptions
+- Return value semantics
 
-### Documentation
-- Architecture docs (explain design decisions)
-- API reference (auto-generated)
-- Tutorials (Jupyter notebooks)
-- Performance optimization guide
+**Architecture Docs**:
+- Design decisions explained
+- Diagrams (draw.io, mermaid)
+- Trade-offs discussed
 
 ---
 
-## Part 6: Timeline & Milestones
+## Part 8: Timeline
 
-### Month 1-2: Learning Toys
-- Complete 3-4 toys from each category
-- Focus on understanding fundamentals
-- Build development environment
+### Months 1-2: API Foundations
+- Complete AL1-AL5 (API learning)
+- Read CUTLASS, Thrust source code
+- Practice using CUDA/cuBLAS/cuDNN APIs
 
-### Month 3-4: First Portfolio Project
-- Choose P1 or P2
-- Aim for production quality
-- Public GitHub repo with good README
+### Months 3-4: Compiler Basics
+- Complete CL1-CL5 (Compiler learning)
+- Finish MLIR Toy tutorial
+- Study LLVM passes
 
-### Month 5-8: Advanced Project + Contributions
-- Start P4, P5, or P6
-- Begin open source contributions
+### Months 5-7: First Portfolio Project
+- Choose P1, P2, or P3
+- Build to production quality
+- Write comprehensive docs
+- Benchmark and visualize
+
+### Months 8-12: Advanced Compiler Project
+- Choose P4, P5, or P6
+- Deep dive into MLIR
+- Contribute to open source alongside
+
+### Months 12-18: Research Project (Optional)
+- P8, P9, or P10
+- Novel contributions
+- Write paper or extensive blog series
+
+### Ongoing:
+- Open source contributions (weekly)
+- Read papers (2-3 per month)
 - Engage with communities
-
-### Month 9-12: Research Project (Optional)
-- P8, P9, or P10 if aiming for research roles
-- Or focus on substantial open source contributions
-- Consider writing blog posts about your work
-
-### Ongoing
-- Maintain projects (respond to issues)
-- Keep learning new techniques
-- Expand portfolio based on job targets
+- Blog about learnings
 
 ---
 
-## Part 7: Showcasing Your Work
+## Part 9: Showcasing Work
 
 ### GitHub Profile
-- Pin your best 4-6 projects
-- Consistent commit history (shows dedication)
-- Detailed READMEs with badges (build status, etc.)
-- Star/watch relevant repos (shows engagement)
+- Pin 4-6 best projects
+- Consistent activity (contributions graph)
+- Star and watch relevant repos
+- Detailed profile README
 
-### Blog Posts
-Platforms: Medium, Dev.to, personal blog
-- "Optimizing GEMM: A Journey from 10 GFLOPS to 1 TFLOPS"
-- "Building a Custom PyTorch Operator: A Complete Guide"
-- "Understanding MLIR: Implementing a Custom Dialect"
-- "How I Contributed to [Major Project]"
+### Technical Blog
+**Platform**: Medium, Dev.to, or personal site
 
-### Talks & Presentations
-- Local meetups
+**Post Ideas**:
+- "Building a GEMM Kernel: 0 to 1 TFLOPS"
+- "Understanding MLIR: A Practical Guide"
+- "Diving into CUTLASS: Template Magic for GPUs"
+- "My Journey Contributing to PyTorch"
+- "Optimizing Attention: A Compiler Perspective"
+
+**Frequency**: 1-2 posts per month
+
+### Talks
+- Local meetups (GPU computing, compilers)
 - Conference lightning talks
 - YouTube tutorials (screen recordings)
 
-### Portfolio Website
+### Portfolio Site
 Simple site with:
-- Project showcase
-- Technical blog
-- About/CV
+- Project showcase (with images/graphs)
+- Technical blog aggregation
+- About + CV
 - Links to GitHub, LinkedIn
 
 ---
 
-This document should keep you busy for 12-18 months! Start with the learning toys to build confidence, then tackle portfolio projects that align with your target companies. Remember: quality over quantity—2-3 really polished projects beat 10 mediocre ones.
+This updated version focuses on C++ API mastery, removes Python binding content, and includes Rust opportunities where relevant. The projects are more compiler and systems-focused, which aligns with your interests and background.
