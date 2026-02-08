@@ -4,17 +4,22 @@
         "CCCL",
         "cuBLAS",
         "CUDA",
-        "Eigen",
+        "eigen",
+        "fatbin",
         "hipify",
         "Lakos",
         "malloc",
         "memcpy",
         "MLIR",
         "NCCL",
+        "NVLINK",
+        "NVRTC",
         "ONNX",
         "RAII",
         "Reddy",
+        "SIMT",
         "Torczon",
+        "Trition",
         "tuxfamily"
     ]
 }
