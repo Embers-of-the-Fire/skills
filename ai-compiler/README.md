@@ -6,3 +6,4 @@
 - Personal Work:
   - Learning Records:
     - [CUDA Fundamentals](./learning/cuda-fundamentals/README.md)
+    - [CUDA C++](./learning/cuda-cpp/README.md)
