@@ -8,6 +8,7 @@
         "fatbin",
         "fprintf",
         "hipify",
+        "INDX",
         "Lakos",
         "malloc",
         "memcpy",
@@ -22,6 +23,8 @@
         "RAII",
         "Reddy",
         "SIMT",
+        "smem",
+        "syncthreads",
         "Torczon",
         "Trition",
         "tuxfamily"

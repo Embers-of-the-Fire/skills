@@ -7,3 +7,4 @@
   - Learning Records:
     - [CUDA Fundamentals](./learning/cuda-fundamentals/README.md)
     - [CUDA C++](./learning/cuda-cpp/README.md)
+    - [CUDA SIMT Kernel](./learning/cuda-simt-kernel/README.md)
