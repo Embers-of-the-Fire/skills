@@ -2,9 +2,11 @@
     "cSpell.words": [
         "Autograd",
         "CCCL",
+        "cout",
         "cuBLAS",
         "CUDA",
         "eigen",
+        "endl",
         "fatbin",
         "fprintf",
         "hipify",
