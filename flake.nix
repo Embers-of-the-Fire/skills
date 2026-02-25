@@ -22,12 +22,12 @@
               linuxPackages.nvidia_x11
               libGLU
               libGL
-              xorg.libXi
-              xorg.libXmu
-              xorg.libXext
-              xorg.libX11
-              xorg.libXv
-              xorg.libXrandr
+              libxi
+              libxmu
+              libxext
+              libx11
+              libxv
+              libxrandr
 
               stdenv.cc
               binutils
